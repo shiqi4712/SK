@@ -1,0 +1,45 @@
+# Dependencies
+backend/node_modules/
+frontend/node_modules/
+
+# Build outputs
+backend/dist/
+frontend/dist/
+
+# Environment & secrets
+backend/.env
+frontend/.env
+.env
+.env.local
+.env.production
+
+# Database
+data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads
+uploads/
+
+# Temporary files
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test artifacts
+coverage/
+
+# Local-only files
+teachers.xlsx
+reset.sql
+test_upload.csv
+test_export.xlsx
+.claude/
