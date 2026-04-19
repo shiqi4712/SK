@@ -22,7 +22,7 @@ SK/
 
 ### 1. 配置环境变量
 
-编辑 `backend/.env`：
+复制 `backend/.env.example` 为 `backend/.env` 并编辑：
 
 ```bash
 # 数据库配置（根据你的MySQL修改）
@@ -54,7 +54,7 @@ npm run start:dev
 
 首次启动会自动创建数据表，并生成默认管理员账号：
 - 工号: `admin`
-- 密码: `admin123`
+- 密码: 取决于 .env 中的 ADMIN_INITIAL_PASSWORD
 
 ### 4. 启动前端
 
@@ -69,9 +69,7 @@ npm run dev
 
 打开 `http://localhost:5173`
 
-使用默认管理员账号登录：
-- 工号: `admin`
-- 密码: `admin123`
+使用默认管理员账号登录。
 
 ## 主要功能
 
