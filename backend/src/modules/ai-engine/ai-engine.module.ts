@@ -8,8 +8,9 @@ import { MemoryQueueService } from './memory-queue.service';
 import { Script } from '../script/script.entity';
 import { CourseData } from '../course-data/course-data.entity';
 import { StudentStatus } from '../status/status.entity';
+import { CourseKnowledgeModule } from '../course-knowledge/course-knowledge.module';
 
-const imports: any[] = [TypeOrmModule.forFeature([Script, CourseData, StudentStatus])];
+const imports: any[] = [TypeOrmModule.forFeature([Script, CourseData, StudentStatus]), CourseKnowledgeModule];
 const providers: any[] = [AiEngineService, AiQueueService];
 
 if (process.env.REDIS_HOST) {

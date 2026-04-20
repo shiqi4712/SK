@@ -15,6 +15,7 @@ import { ScriptModule } from './modules/script/script.module';
 import { ExportModule } from './modules/export/export.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
+import { CourseKnowledgeModule } from './modules/course-knowledge/course-knowledge.module';
 
 function getDatabaseConfig() {
   const isSqlite = process.env.DB_TYPE === 'sqlite' || process.env.DB_TYPE === 'sqljs' || !process.env.DB_TYPE;
@@ -81,6 +82,7 @@ const imports = [
   ExportModule,
   AdminModule,
   AiEngineModule,
+  CourseKnowledgeModule,
 ];
 
 if (redisModule) {

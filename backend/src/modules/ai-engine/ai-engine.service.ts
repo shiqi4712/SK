@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { CourseKnowledgeService } from '../course-knowledge/course-knowledge.service';
 
 export type AiStyle = 'serious' | 'friendly' | 'warm' | 'challenge';
 
@@ -9,7 +10,10 @@ export class AiEngineService {
   private readonly apiKey: string;
   private readonly model: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private courseKnowledgeService: CourseKnowledgeService,
+  ) {
     this.apiUrl = this.configService.get('DEEPSEEK_API_URL') || 'https://api.deepseek.com/v1/chat/completions';
     this.apiKey = this.configService.get('DEEPSEEK_API_KEY') || '';
     this.model = this.configService.get('DEEPSEEK_MODEL') || 'deepseek-chat';
@@ -20,7 +24,7 @@ export class AiEngineService {
       throw new BadRequestException('DeepSeek API Key 未配置');
     }
 
-    const prompt = this.buildPrompt(data, status);
+    const prompt = await this.buildPrompt(data, status);
 
     try {
       const response = await fetch(this.apiUrl, {
@@ -54,9 +58,9 @@ export class AiEngineService {
 
   private getSystemPrompt(style: AiStyle): string {
     const base = `你是一位资深的少儿编程C++教培老师，擅长撰写家长回访话术。
-请根据学员数据和老师的状态评价，生成一段专业、有针对性的回访话术。
+请根据学员数据、老师的状态评价以及本节课知识点，生成一段专业、有针对性的回访话术。
 严格按以下模块输出：
-【授课内容】
+【授课内容】（必须结合本节课知识点展开，具体说明学了什么概念、用途、重难点，不要泛泛而谈）
 【课中表现】
 【下节课预告】（如适用）
 【本周任务】
@@ -101,7 +105,7 @@ export class AiEngineService {
     return `${base}\n\n${styleHints[style]}`;
   }
 
-  private buildPrompt(data: any, status: any): string {
+  private async buildPrompt(data: any, status: any): Promise<string> {
     const scenario = this.detectScenario(data, status);
     let scenarioHint = '';
 
@@ -111,6 +115,17 @@ export class AiEngineService {
       scenarioHint = '该学员课中表现较弱但基础尚可，话术以委婉鼓励为主，强调基础扎实，给出具体练习建议。';
     } else if (scenario === 'excellent') {
       scenarioHint = '该学员表现优秀，话术以鼓励巩固为主，建议适当挑战。';
+    }
+
+    const knowledge = await this.courseKnowledgeService.findByCourseName(data.courseName);
+    let knowledgeSection = '';
+    if (knowledge && knowledge.keyPoints) {
+      knowledgeSection = `
+【本节课知识点】
+课程名称: ${knowledge.courseName}
+核心知识点:
+${knowledge.keyPoints}
+`;
     }
 
     return `【学员数据】
@@ -124,7 +139,7 @@ export class AiEngineService {
 - 获得奖杯数: ${data.trophyCount}
 - 开麦时长: ${data.micDuration}分钟
 - 开摄像头时长: ${data.cameraDuration}分钟
-
+${knowledgeSection}
 【老师状态评价】
 - 出勤确认: ${status?.attendanceStatus || '未评价'}
 - 课堂表现: ${status?.performanceLevel || '未评价'}
