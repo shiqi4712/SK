@@ -25,6 +25,11 @@ export class AdminController {
     return this.adminService.getStats();
   }
 
+  @Get('weekly-stats')
+  async weeklyStats(@Query('weekLabel') weekLabel?: string) {
+    return this.adminService.getWeeklyStats(weekLabel);
+  }
+
   @Post('teachers')
   async createTeacher(@Body() dto: { name: string; employeeNo: string; password?: string }) {
     return this.adminService.createTeacher(dto);

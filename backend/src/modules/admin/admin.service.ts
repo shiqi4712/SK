@@ -58,6 +58,31 @@ export class AdminService {
     };
   }
 
+  async getWeeklyStats(weekLabel?: string) {
+    const query = this.scriptRepo
+      .createQueryBuilder('script')
+      .select([
+        'script.teacherId AS teacherId',
+        'teacher.name AS teacherName',
+        'teacher.employeeNo AS employeeNo',
+        'script.weekLabel AS weekLabel',
+        'COUNT(*) AS scriptCount',
+      ])
+      .leftJoin(User, 'teacher', 'teacher.id = script.teacherId')
+      .groupBy('script.teacherId')
+      .addGroupBy('script.weekLabel')
+      .addGroupBy('teacher.name')
+      .addGroupBy('teacher.employeeNo')
+      .orderBy('script.weekLabel', 'DESC')
+      .addOrderBy('scriptCount', 'DESC');
+
+    if (weekLabel) {
+      query.andWhere('script.weekLabel = :weekLabel', { weekLabel });
+    }
+
+    return query.getRawMany();
+  }
+
   async createTeacher(dto: { name: string; employeeNo: string; password?: string }) {
     const exists = await this.userRepo.findOne({
       where: { employeeNo: dto.employeeNo },

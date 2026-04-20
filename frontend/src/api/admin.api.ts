@@ -8,6 +8,10 @@ export function getStats() {
   return request.get('/admin/stats')
 }
 
+export function getWeeklyStats(weekLabel?: string) {
+  return request.get('/admin/weekly-stats', { params: weekLabel ? { weekLabel } : undefined })
+}
+
 export function getTeachers() {
   return request.get('/admin/teachers')
 }
