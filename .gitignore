@@ -42,4 +42,7 @@ teachers.xlsx
 reset.sql
 test_upload.csv
 test_export.xlsx
+KCDG.xlsx
+ai-feedback.zip
+*.zip
 .claude/

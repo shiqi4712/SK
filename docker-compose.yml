@@ -1,30 +1,41 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: ai-feedback-mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: ai_feedback
-      MYSQL_USER: aifeedback
-      MYSQL_PASSWORD: aifeedback123
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
   redis:
     image: redis:7-alpine
     container_name: ai-feedback-redis
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
 
+  backend:
+    build: ./backend
+    container_name: ai-feedback-backend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - APP_PORT=3000
+      - DB_TYPE=sqlite
+      - DB_LOCATION=./data/db.sqlite
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FRONTEND_URL=http://localhost
+    volumes:
+      - backend_data:/app/data
+      - backend_uploads:/app/uploads
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend
+    container_name: ai-feedback-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
 volumes:
-  mysql_data:
   redis_data:
+  backend_data:
+  backend_uploads:
