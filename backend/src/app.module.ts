@@ -23,7 +23,7 @@ function getDatabaseConfig() {
     return {
       type: 'sqlite' as const,
       database: process.env.DB_LOCATION || './data/db.sqlite',
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true' || process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'development',
     };
   }

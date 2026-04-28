@@ -15,10 +15,12 @@ services:
     environment:
       - NODE_ENV=production
       - APP_PORT=3000
+      - TYPEORM_SYNCHRONIZE=true
       - DB_TYPE=sqlite
       - DB_LOCATION=./data/db.sqlite
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      # TODO: 部署后请改为你的服务器公网 IP 或域名，例如 http://1.2.3.4
       - FRONTEND_URL=http://localhost
     volumes:
       - backend_data:/app/data
